@@ -9,5 +9,9 @@ The Kit provides:
 
 ## Links
 
-- [See Visual mocks for this feature - Flex Discounts for Three-Year Commit customers](feature-specs/flexible-discounts/reference-files/visuals/3yc_promo_discovery.png)
-- [Prompt an LLM of your choice to implement this feature](manual/quick-start.md)
+- See Visual mocks for this feature - Flex Discounts for Three-Year Commit customers - [(GIF)](https://github.com/vsahay/adobe-commerce-partnerships-ai-kit/blob/main/feature-specs/flexible-discounts/reference-files/visuals/3YC%20Discount%20Walkthrough.gif)
+ [(MP4)](https://github.com/vsahay/adobe-commerce-partnerships-ai-kit/blob/main/feature-specs/flexible-discounts/reference-files/visuals/3YC%20Discount%20Walkthrough.mp4)
+ [(PDF)](https://github.com/vsahay/adobe-commerce-partnerships-ai-kit/blob/main/feature-specs/flexible-discounts/reference-files/visuals/3YC%20Discount%20Walkthrough.pdf)
+- Prompt an LLM of your choice to implement this feature - [Get Started](manual/quick-start.md)
+
+## Must Read - [Disclaimer](https://github.com/vsahay/adobe-commerce-partnerships-ai-kit/blob/main/DISCLAIMER.md)
