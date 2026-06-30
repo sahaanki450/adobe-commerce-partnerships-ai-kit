@@ -37,7 +37,7 @@ Create a feature branch in both repos before running. The generated code should 
 
 ## Running the Skill
 
-Open Claude Code in the `partner-ai-kit` directory and run:
+Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
 
 ```
 /implement-feature <featureName> <path-to-backend-repo> <path-to-frontend-repo>

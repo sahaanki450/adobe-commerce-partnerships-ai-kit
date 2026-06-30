@@ -24,20 +24,8 @@ mkdir -p .claude
 # 2. Copy the skills into .claude
 cp -r skills .claude/skills
 
-# 3. Create a minimal CLAUDE.md so Claude Code knows the kit layout
-cat > .claude/CLAUDE.md << 'EOF'
-# Adobe Commerce Partnerships AI KIT
-
-## Structure
-- `skills/`                  — AI skills (slash commands)
-- `feature-specs/`           — Feature specifications (experience cards, API specs)
-- `service-cards-templates/` — Templates for service card generation
-
-## How to use
-See `manual/README.md` for the full workflow.
-Skills are available as slash commands: /generate-backend-service-card,
-/generate-ui-service-card, /apply-api-spec, /apply-experience-card, /implement-feature
-EOF
+# 3. Start Claude Code
+claude
 ```
 
 ---

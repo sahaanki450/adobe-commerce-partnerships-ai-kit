@@ -15,34 +15,35 @@ Most AI agents (Claude, ChatGPT, Gemini, GitHub Copilot) can generate a visual r
 
 ---
 
-## Try it out on commerce-partnerships-ref-app
+## Try it out on adobe-commerce-partnerships-ref-app
 
-A hands-on way to explore what the toolkit can do. Uses Adobe's reference LLD and service cards to generate a feature implementation on **commerce-partnerships-ref-app** — Adobe's reference VIP MP partner app — in a single skill command.
+A hands-on way to explore what the toolkit can do. Uses Adobe's reference LLD and service cards to generate a feature implementation on **adobe-commerce-partnerships-ref-app** — Adobe's reference VIP MP partner app — in a single skill command.
 
 **What you need:**
-- [commerce-partnerships-ref-app](https://github.com/OneAdobe/commerce-partnerships-ref-app) cloned on the `develop` branch
-- this repo cloned alongside it
+- [adobe-commerce-partnerships-ref-app](https://github.com/adobe/adobe-commerce-partnerships-ref-app) cloned on the `develop` branch
+- [adobe-commerce-partnerships-ai-kit](https://github.com/adobe/adobe-commerce-partnerships-ai-kit) cloned alongside it
 
 **Directory layout:**
 ```
 ~/Documents/
-  partner-ai-kit/                    ← this repo
-  commerce-partnerships-ref-app/     ← develop branch
+  adobe-commerce-partnerships-ai-kit/                    ← this repo
+  adobe-commerce-partnerships-ref-app/     ← develop branch
 ```
 
-### Step 1 — Clone and install commerce-partnerships-ref-app
+### Step 1 — Clone and install
 
 ```
-git clone -b develop https://github.com/OneAdobe/commerce-partnerships-ref-app.git ../commerce-partnerships-ref-app
-cd ../commerce-partnerships-ref-app && npm install && cp .env.sample .env
+git clone git@github.com:adobe/adobe-commerce-partnerships-ai-kit.git
+git clone -b develop git@github.com:adobe/adobe-commerce-partnerships-ref-app.git
+cd adobe-commerce-partnerships-ref-app && npm install && cp .env.sample .env
 ```
 
-Fill in your VIP MP credentials in `.env`. See [configuration](https://github.com/OneAdobe/commerce-partnerships-ref-app#configuration) for details.
+Fill in your VIP MP credentials in `.env`. See [configuration](https://github.com/adobe/adobe-commerce-partnerships-ref-app#configuration) for details.
 
 ### Step 2 — Open your AI coding agent in the kit directory
 
 ```
-cd ../partner-ai-kit
+cd ../adobe-commerce-partnerships-ai-kit
 ```
 
 Open your AI coding agent here. Skills are invoked as slash commands (e.g. `/implement-feature`).
@@ -52,7 +53,7 @@ Open your AI coding agent here. Skills are invoked as slash commands (e.g. `/imp
 ### Step 3 — Run the feature skill
 
 ```
-/implement-feature flexible-discounts ../commerce-partnerships-ref-app --use-reference-files
+/implement-feature flexible-discounts ../adobe-commerce-partnerships-ref-app --use-reference-files
 ```
 
 The `--use-reference-files` flag tells the skill to load the pre-approved LLD and service cards from `feature-specs/<featureName>/reference-files/` in this repo instead of generating them.
@@ -60,7 +61,7 @@ The `--use-reference-files` flag tells the skill to load the pre-approved LLD an
 ### Step 4 — Verify the feature
 
 ```
-/verify-feature flexible-discounts ../commerce-partnerships-ref-app --use-reference-files
+/verify-feature flexible-discounts ../adobe-commerce-partnerships-ref-app --use-reference-files
 ```
 
 Audits every generated file against the LLD spec, checks wiring, and runs the project's type-check. When static checks pass, the skill starts the dev server automatically at [http://localhost:9000](http://localhost:9000) and presents a browser checklist — go through each item and reply with any that fail.
@@ -74,13 +75,13 @@ To integrate a VIP MP feature into your codebase, follow these steps to generate
 **Directory layout:**
 ```
 ~/Documents/
-  partner-ai-kit/      ← this repo
+  adobe-commerce-partnerships-ai-kit/      ← this repo
   your-project/        ← your VIP MP partner app
 ```
 
 ### Step 1 — Open your AI coding agent in the kit directory
 
-All skills must be run from the `partner-ai-kit/` working directory. Open your AI coding agent here.
+All skills must be run from the `adobe-commerce-partnerships-ai-kit/` working directory. Open your AI coding agent here.
 
 > **Using Claude Code?** See [Setting Up Claude Code](setup/claude-code.md).
 

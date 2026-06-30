@@ -31,7 +31,7 @@ Every piece of backend code the toolkit generates will follow the patterns in th
 
 ## Running the Skill
 
-Open Claude Code in the `partner-ai-kit` directory and run:
+Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
 
 ```
 /generate-backend-service-card <path-to-backend-repo> --feature-name <featureName>

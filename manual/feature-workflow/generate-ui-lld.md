@@ -26,7 +26,7 @@ If the UI LLD does not accurately reflect the experience card, the generated cod
 
 ## Running the Skill
 
-Open Claude Code in the `partner-ai-kit` directory and run:
+Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
 
 ```
 /apply-experience-card <featureName> <path-to-frontend-repo>

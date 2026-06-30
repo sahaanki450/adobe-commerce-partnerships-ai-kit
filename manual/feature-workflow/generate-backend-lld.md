@@ -25,7 +25,7 @@ The AI produces this by reading three inputs together:
 
 ## Running the Skill
 
-Open Claude Code in the `partner-ai-kit` directory and run:
+Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
 
 ```
 /apply-api-spec <featureName> <path-to-backend-repo>
