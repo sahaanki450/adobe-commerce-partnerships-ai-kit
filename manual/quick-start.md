@@ -70,13 +70,13 @@ Audits every generated file against the LLD spec, checks wiring, and runs the pr
 
 ## Run the full workflow
 
-To integrate a VIP MP feature into your codebase, follow these steps to generate service cards, produce LLDs from Adobe's feature specs, and implement the integration code.
+This is the full, multi-step workflow to integrate a VIP MP feature into a codebase of your choice — Adobe's reference app (**adobe-commerce-partnerships-ref-app**) or your own project. Follow these steps to generate service cards, produce LLDs from Adobe's feature specs, and implement the integration code.
 
 **Directory layout:**
 ```
 ~/Documents/
-  adobe-commerce-partnerships-ai-kit/      ← this repo
-  your-project/        ← your VIP MP partner app
+  adobe-commerce-partnerships-ai-kit/            ← this repo
+  adobe-commerce-partnerships-ref-app/     ← or your own VIP MP partner app
 ```
 
 ### Step 1 — Open your AI coding agent in the kit directory
@@ -95,7 +95,7 @@ All skills must be run from the `adobe-commerce-partnerships-ai-kit/` working di
 
 Example:
 ```
-/generate-backend-service-card ../your-project
+/generate-backend-service-card ../adobe-commerce-partnerships-ref-app
 ```
 
 Scans your backend codebase and produces a service card set capturing its patterns, contracts, and conventions. Written to `<targetRepo>/docs/ai-kit/service-cards/backend/`.
@@ -110,7 +110,7 @@ Scans your backend codebase and produces a service card set capturing its patter
 
 Example:
 ```
-/generate-ui-service-card ../your-project
+/generate-ui-service-card ../adobe-commerce-partnerships-ref-app
 ```
 
 Scans your frontend codebase and produces a service card set covering component patterns, state management, data layer, and routing conventions. Written to `<targetRepo>/docs/ai-kit/service-cards/ui/`.
@@ -123,7 +123,7 @@ Scans your frontend codebase and produces a service card set covering component 
 
 Example:
 ```
-/apply-api-spec ../your-project feature-specs/flexible-discounts/APISpec/flexible-discounts-apispec.md
+/apply-api-spec ../adobe-commerce-partnerships-ref-app feature-specs/flexible-discounts/APISpec/flexible-discounts-apispec.md
 ```
 
 Reads the API spec and your backend service cards, then produces a Low-Level Design for all backend changes needed. Written to `<targetRepo>/docs/ai-kit/LLD/backend/`.
@@ -146,8 +146,8 @@ Example:
 ```
 /apply-experience-card \
   feature-specs/flexible-discounts/experience-card/flexible-discounts.md \
-  ../your-project \
-  ../your-project/docs/ai-kit/LLD/backend/flexible-discounts-lld.md
+  ../adobe-commerce-partnerships-ref-app \
+  ../adobe-commerce-partnerships-ref-app/docs/ai-kit/LLD/backend/flexible-discounts-lld.md
 ```
 
 Reads the experience card and the approved backend LLD, reads your UI service cards, and produces a UI Low-Level Design covering components, data fetch units, state, and navigation. Written to `<targetRepo>/docs/ai-kit/LLD/ui/`.
@@ -169,7 +169,7 @@ Reads the experience card and the approved backend LLD, reads your UI service ca
 
 Example:
 ```
-/implement-feature flexible-discounts ../your-project
+/implement-feature flexible-discounts ../adobe-commerce-partnerships-ref-app
 ```
 
 Reads both approved LLDs and your service cards, then generates the feature implementation — backend (models, controllers, routes, constants) and UI (hooks, components, pages, CSS modules). Runs a type-check at the end and auto-fixes any errors in the generated files before reporting done.
@@ -182,7 +182,7 @@ Reads both approved LLDs and your service cards, then generates the feature impl
 
 Example:
 ```
-/verify-feature flexible-discounts ../your-project
+/verify-feature flexible-discounts ../adobe-commerce-partnerships-ref-app
 ```
 
 Audits every generated file against the LLD spec (bullet-by-bullet), checks wiring between the UI and backend, runs the project's type-check command, and verifies experience card acceptance criteria coverage.

@@ -27,7 +27,7 @@ a feature spec with its API spec and the project's backend service cards.
 
 The skill derives everything else:
 - **featureName** — the directory segment immediately after `feature-specs/` in the `featureSpecPath` (e.g. `feature-specs/anytimeUpgrade/...` → `anytimeUpgrade`). If the path does not contain `feature-specs/`, use the filename stem.
-- **API spec** — `feature-specs/<featureName>/APISpecs/<feature-spec-filename>.md` (relative to AI-Kit working directory)
+- **API spec** — `feature-specs/<featureName>/APISpec/<feature-spec-filename>.md` (relative to AI-Kit working directory)
 - **Backend service cards** — `<targetRepo>/docs/ai-kit/service-cards/backend/`
 - **LLD output path** — `<targetRepo>/docs/ai-kit/LLD/backend/<feature-spec-filename>-lld.md`
 
@@ -65,7 +65,7 @@ Read `<featureSpecPath>`. Extract:
 Derive the API spec path:
 
 ```
-feature-specs/<featureName>/APISpecs/<feature-spec-filename>.md
+feature-specs/<featureName>/APISpec/<feature-spec-filename>.md
 ```
 
 Read the API spec. Extract per operation:
