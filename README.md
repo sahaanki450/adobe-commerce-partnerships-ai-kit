@@ -1,10 +1,12 @@
 # Adobe Commerce Partnerships AI KIT
 
-**What it is:** A self-contained AI-Kit combining a reference application (Bridge) with an AI-assisted development workflow for building on Adobe Commerce Partner APIs.​
+**What it is:** A self-contained AI-Kit combining a reference application ((adobe-commerce-partnerships-ref-app)) with an AI-assisted development workflow for building on Adobe Commerce Partner APIs.
+
+**What it provides:** Visual representations of VIP Marketplace features, and tools that let technical users direct an LLM of their choice to visualize a feature and generate the integration code for it.​
 
 **How features are defined:** New capabilities are captured as Experience Cards — simple Markdown specs describing intent, requirements, and expected behavior — removing the need for heavyweight upfront design docs.​
 
-**How code gets built:** Purpose-built Skills consume the Experience Card and automatically generate a Low-Level Design (LLD)/implementation plan, then scaffold working, integrated code on top of the reference codebase.​
+**How code gets built:** Purpose-built Skills consume the Experience Card and API Domain Docs and automatically generate a Low-Level Design (LLD)/implementation plan, then scaffold working, integrated code on top of the reference codebase.​
 
 **Integration:** The reference app and generated code connect directly to Adobe Commerce Partner APIs, so the output is functional, not just illustrative.​
 
