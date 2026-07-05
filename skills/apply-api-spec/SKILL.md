@@ -25,12 +25,11 @@ a feature spec with its API spec and the project's backend service cards.
 | `targetRepo` | Yes | Absolute path to the target application repo (e.g. `/Users/me/bridge`). Used to locate service cards and to read the codebase when scanning for existing implementations. |
 | `featureSpecPath` | Yes | Absolute or relative path to the feature's directory under `feature-specs/` (e.g. `feature-specs/anytimeUpgrade/`). |
 
-The skill derives everything else from **featureName** — the last path segment of `featureSpecPath` (e.g. `feature-specs/anytimeUpgrade/` → `anytimeUpgrade`).
-
-- **Experience card** — the single `.md` file under `feature-specs/<featureName>/experience-card/`
-- **API spec** — the single `*-apispec.md` file under `feature-specs/<featureName>/APISpec/`
+The skill derives everything else:
+- **featureName** — the directory segment immediately after `feature-specs/` in the `featureSpecPath` (e.g. `feature-specs/anytimeUpgrade/...` → `anytimeUpgrade`). If the path does not contain `feature-specs/`, use the filename stem.
+- **API spec** — `feature-specs/<featureName>/APISpecs/<feature-spec-filename>.md` (relative to AI-Kit working directory)
 - **Backend service cards** — `<targetRepo>/docs/ai-kit/service-cards/backend/`
-- **LLD output path** — `<targetRepo>/docs/ai-kit/LLD/backend/<experience-card-filename>-lld.md` (filename stem taken from the experience card file)
+- **LLD output path** — `<targetRepo>/docs/ai-kit/LLD/backend/<feature-spec-filename>-lld.md`
 
 > **Prerequisite:** Backend service cards for `<targetRepo>` must exist before running this skill. If they don't exist, run `/generate-backend-service-card <targetRepo>` first. See `manual/README.md` for the full workflow.
 
