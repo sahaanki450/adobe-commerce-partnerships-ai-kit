@@ -1,6 +1,6 @@
 # Adobe Commerce Partnerships AI KIT — Instruction Manual
 
-This manual teaches you how to use the Adobe Commerce Partnerships AI KIT to implement Adobe VIPMP Partners API features in your project using AI-assisted code generation.
+This manual teaches you how to use the Adobe Commerce Partnerships AI KIT to implement Adobe VIPMP Partners API features in the **adobe-commerce-partnerships-ref-app** or your own project using AI-assisted code generation.
 
 ---
 
@@ -26,12 +26,15 @@ Read **[Conceptual Guide](conceptual-guide.md)** first, regardless of your role.
 
 | Guide | Purpose |
 |---|---|
-| [Quick Start](quick-start.md) | End-to-end walkthrough using the kit with a real project |
+| [Quick Start](quick-start.md) | End-to-end walkthrough using the kit with a real project<br>Covers multiple paths — visualize the feature, try it on the reference app, or run the full workflow on a real project |
 
 ---
 
-### First-Run Guides
-Run these once when onboarding a new project. They do not repeat per feature.
+### Prerequisites
+
+**Service Cards** — a structured description of your codebase that the AI reads before generating any code, so the output matches your project's own patterns.
+
+Run these once when onboarding a new project, before starting any Feature Workflow guide — and again after major code changes to the target repo.
 
 | Guide | Purpose  |
 |---|---|
@@ -41,15 +44,14 @@ Run these once when onboarding a new project. They do not repeat per feature.
 ---
 
 ### Feature Workflow Guides
-Run these once per feature, in order. Do not skip steps or run them out of sequence.
+Run these once per feature.
 
 | Guide | Purpose | Source |
 |---|---|---|
-| [Receiving the Experience Card](feature-workflow/review-experience-card.md) | Validate the user journey document provided by Adobe | Provided by Adobe |
-| [Receiving the API Spec](feature-workflow/review-api-spec.md) | Validate the API endpoint document provided by Adobe | Provided by Adobe |
+| [Receiving the Experience Card](feature-workflow/review-experience-card.md) & [API Spec](feature-workflow/review-api-spec.md) | AI reads both to produce the LLDs in later steps.<br>Review the user journey document so you can adapt it to your brand and UX guidelines if needed | Provided by Adobe |
 | [Generating the Backend LLD](feature-workflow/generate-backend-lld.md) | AI produces a backend engineering plan from the API spec and your service cards | You run this |
 | [Generating the UI LLD](feature-workflow/generate-ui-lld.md) | AI produces a UI engineering plan from the experience card and backend LLD | You run this |
-| [Generating Code](feature-workflow/generate-code.md) | AI generates working code from the approved LLDs and service cards | You run this |
+| [Generating Code](feature-workflow/generate-code.md) | AI generates working code from the approved LLDs and service cards, then audits it against the LLDs and runs a guided browser checklist | You run this |
 
 ---
 
@@ -72,6 +74,7 @@ Run these once per feature, in order. Do not skip steps or run them out of seque
 │          /apply-api-spec                        │
 │          /apply-experience-card                 │
 │          /implement-feature                     │
+│          /verify-feature                        │
 └───────────────────┬─────────────────────────────┘
                     │
 ┌───────────────────▼─────────────────────────────┐
@@ -89,13 +92,13 @@ Run these once per feature, in order. Do not skip steps or run them out of seque
                     ▼  (repeat for each feature)
 ┌─────────────────────────────────────────────────┐
 │  YOU DO — PER FEATURE                           │
-│  Validate Experience Card                       │
-│  Validate API Spec                              │
+│  Review Experience Card & API Spec              │
 │  Generate Backend LLD                           │
 │        → Review & approve                       │
 │  Generate UI LLD                                │
 │        → Review & approve                       │
 │  Generate Code                                  │
+│  Verify Feature                                 │
 └─────────────────────────────────────────────────┘
 ```
 

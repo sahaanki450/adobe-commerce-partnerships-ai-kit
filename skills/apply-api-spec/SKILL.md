@@ -23,7 +23,7 @@ a feature spec with its API spec and the project's backend service cards.
 | Argument | Required | Description |
 |----------|----------|-------------|
 | `targetRepo` | Yes | Absolute path to the target application repo (e.g. `/Users/me/bridge`). Used to locate service cards and to read the codebase when scanning for existing implementations. |
-| `featureSpecPath` | Yes | Absolute or relative path to the feature spec file (e.g. `feature-specs/anytimeUpgrade/feature-spec/anytime-upgrade.md`). |
+| `featureSpecPath` | Yes | Absolute or relative path to the feature's directory under `feature-specs/` (e.g. `feature-specs/anytimeUpgrade/`). |
 
 The skill derives everything else:
 - **featureName** — the directory segment immediately after `feature-specs/` in the `featureSpecPath` (e.g. `feature-specs/anytimeUpgrade/...` → `anytimeUpgrade`). If the path does not contain `feature-specs/`, use the filename stem.

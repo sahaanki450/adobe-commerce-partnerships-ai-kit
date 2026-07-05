@@ -26,17 +26,19 @@ If the UI LLD does not accurately reflect the experience card, the generated cod
 
 ## Running the Skill
 
-Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
+Open your AI coding agent in this AI Kit's root directory and run:
 
 ```
-/apply-experience-card <featureName> <path-to-frontend-repo>
+/apply-experience-card <path-to-experience-card> <path-to-frontend-repo> <path-to-backend-lld>
 ```
 
 **Example:**
 
 ```
-/apply-experience-card anytimeUpgrade ../my-partner-frontend
+/apply-experience-card feature-specs/anytime-upgrade/experience-card/anytime-upgrade.md ../my-partner-frontend ../my-partner-backend/docs/ai-kit/LLD/backend/anytime-upgrade-lld.md
 ```
+
+Pass `none` as the third argument if the feature makes no new backend calls — the skill will derive all data fetch units from your existing `DATA_LAYER.md` only.
 
 If a Figma URL is present in the experience card, the AI will fetch the design automatically. See the Figma section below.
 
@@ -47,20 +49,16 @@ If a Figma URL is present in the experience card, the AI will fetch the design a
 The skill produces a single file at:
 
 ```
-.claude/feature-specs/<featureName>/reference-files/BridgeLLD/ui/<feature-name>-ui-lld.md
+<path-to-frontend-repo>/docs/ai-kit/LLD/ui/<experience-card-filename>-lld.md
 ```
 
-The LLD contains 10 sections:
+The LLD contains 6 sections:
 
 | Section | What it contains |
 |---|---|
-| **Summary** | One-paragraph description of the UI changes; notes Figma source if used |
-| **Route Changes** | New routes to add, params, auth guard, stores required |
-| **Component Specs** | Each new component: props, state, visual specs (from Figma if available) |
-| **Fetch Hook Specs** | Each new hook: endpoint URL, request shape, response handling, error states |
-| **State & Context Changes** | Changes to existing stores or context; new state required |
-| **Data Flow** | Step-by-step data flow per user action, from UI event to rendered state |
-| **Reuse Summary** | Existing components, hooks, and utilities to reuse |
+| **Summary** | One-paragraph description of the UI changes; states whether a Figma source was used |
+| **Data Flow** | For each primary user action, the end-to-end call chain from event to rendered state |
+| **Change Summary** | Every file to create or modify — a named subsection per file covering routes, components, data fetch units, state, or styles as applicable, including reuse of existing code |
 | **Design Decisions** | Non-obvious choices and reasoning |
 | **Acceptance Criteria Coverage** | How each acceptance criterion from the experience card is met |
 | **Out of Scope** | What the UI will not handle in this implementation |
@@ -69,7 +67,7 @@ The LLD contains 10 sections:
 
 ## Figma Integration
 
-If your experience card includes a Figma URL, the AI will fetch the design and extract visual specifications — spacing, color tokens, component structure, typography. These are incorporated into the Component Specs section of the UI LLD.
+If your experience card includes a Figma URL, the AI will fetch the design and extract visual specifications — spacing, color tokens, component structure, typography. These are incorporated into the relevant component subsections of the Change Summary in the UI LLD.
 
 **To ensure Figma works correctly:**
 
@@ -82,7 +80,7 @@ If your experience card includes a Figma URL, the AI will fetch the design and e
 
    To get the node ID: In Figma, right-click the frame → "Copy link" — this includes the node ID automatically.
 
-2. The Figma file must be publicly accessible, or your Claude Code session must have Figma access configured.
+2. The Figma file must be publicly accessible, or your AI coding agent session must have Figma access configured.
 
 3. If Figma is unavailable or the URL is wrong, the AI will proceed without visual specs. The LLD will describe components functionally but without visual guidance. In this case, note the gap in the UI LLD review and fill in visual specs manually before approving.
 
@@ -92,7 +90,7 @@ If your experience card includes a Figma URL, the AI will fetch the design and e
 
 **Partners must review and approve this LLD before proceeding.**
 
-Open the [Decision Gate Guide — DG-4](../decision-gates.md#dg-4-ui-lld-review) for the full review checklist.
+Open the [Decision Gate Guide — DG-4](../decision-gates.md#dg-4--ui-lld-review) for the full review checklist.
 
 ### Review focus:
 - Route definitions are correct and match the existing routing structure

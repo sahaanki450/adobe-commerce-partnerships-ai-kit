@@ -10,64 +10,62 @@
 
 ## What This Step Does
 
-This step uses the AI to generate working implementation code for both the backend and frontend, following the approved LLDs and the patterns documented in your service cards.
+This step uses the AI to generate working implementation code for both the backend and frontend of your target repo, following the approved LLDs and the patterns documented in your service cards.
 
-Unlike the LLD steps, this step writes real code directly into your project repos. The AI generates all files listed in both LLDs, then runs validation automatically.
+Unlike the LLD steps, this step writes real code directly into your project repo. The AI generates all files listed in both LLDs, then runs a wiring check to confirm the UI and backend actually connect correctly.
 
-You do not need to direct the AI through the generation — it works through the LLD systematically. Your job at this step is to:
+You do not need to direct the AI through the generation — it works through the LLDs systematically. Your job at this step is to:
 1. Run the command
-2. Monitor for validation failures
+2. Monitor for gaps flagged in the wiring check
 3. Complete a standard code review of the output
 
 ---
 
-## Before You Run
-
-Confirm the following are true:
-
-- [ ] Backend service cards are accurate and up to date
-- [ ] UI service cards are accurate and up to date
-- [ ] Backend LLD is in its final approved state
-- [ ] UI LLD is in its final approved state
-- [ ] Your backend and frontend repos are on a clean branch (no uncommitted changes)
-
-Create a feature branch in both repos before running. The generated code should land on a branch, not directly on main.
-
----
 
 ## Running the Skill
 
-Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
+Open your AI coding agent in this AI Kit's root directory and run:
 
 ```
-/implement-feature <featureName> <path-to-backend-repo> <path-to-frontend-repo>
+/implement-feature <featureName> <targetRepoPath> [--mode=both|backend|ui] [--use-reference-files]
 ```
 
 **Example:**
 
 ```
-/implement-feature anytimeUpgrade ../my-partner-backend ../my-partner-frontend
+/implement-feature anytime-upgrade ../my-partner-app
 ```
 
-The skill runs in 7 phases:
+| Flag | Default | Description |
+|---|---|---|
+| `--mode` | `both` | `--mode=backend` or `--mode=ui` to generate only one side |
+| `--use-reference-files` | off | Loads LLDs and service cards from this kit's pre-approved reference location instead of the target repo. Only use this when the target repo is **adobe-commerce-partnerships-ref-app**; for your own project's real features, leave it off. |
+
+The skill runs in 5 phases:
 
 | Phase | What happens |
 |---|---|
-| 1 — Load reference material | Reads both LLDs and both sets of service cards |
-| 2 — Generate backend code | Creates models, controllers, API routes, constants |
-| 3 — Generate UI code | Creates fetch hooks, page components, sub-components, CSS modules, context updates |
-| 4 — Wire up | Cross-checks contracts between backend and UI — URLs, request types, response shapes |
-| 5 — Validate | Runs TypeScript diagnostics and lint in both repos |
-| 6 — Smoke test | Generates and runs a temporary Playwright test for each new page |
-| 7 — Update service cards | Appends new capabilities to the relevant service card sections |
+| 1 — Load reference material | Reads the experience card, both LLDs, and the relevant service cards |
+| 2 — Generate backend code | Creates models, controllers, API routes, constants — skipped for `--mode=ui` |
+| 3 — Generate UI code | Creates fetch hooks, page components, sub-components, state/style files — skipped for `--mode=backend` |
+| 4 — Wiring check | Cross-checks contracts between backend and UI (URLs, params, request/response shapes, auth), then verifies every acceptance criterion in the experience card is satisfied — skipped for `--mode=backend` or `--mode=ui` |
+| 5 — Report | Prints created/modified files, reuse applied, wiring verification, and experience card coverage |
 
 This will take several minutes. Do not interrupt it between phases.
 
 ---
 
+## Verify the Feature
+
+Once the skill completes without unresolved gaps, run `/verify-feature` before opening a PR — it audits every generated file against the LLDs bullet-by-bullet and walks through a browser checklist derived from the experience card.
+
+---
+
 ## What Gets Generated
 
-### Backend files (in your backend repo):
+All files are written into your target repo, at the paths documented in your service cards' `CODE_PATTERNS.md` / `UI_CODE_PATTERNS.md`.
+
+### Backend files:
 
 | Type | Location (follows your service card paths) |
 |---|---|
@@ -76,39 +74,35 @@ This will take several minutes. Do not interrupt it between phases.
 | Route definitions | `src/routes/<feature>/` |
 | Constants | `src/constants/<feature>/` |
 
-### Frontend files (in your frontend repo):
+### UI files:
 
 | Type | Location (follows your service card paths) |
 |---|---|
-| Fetch hooks | `src/hooks/<feature>/` |
+| Fetch hooks / data fetch units | `src/hooks/<feature>/` |
 | Page components | `src/pages/<feature>/` |
 | Sub-components | `src/components/<feature>/` |
-| CSS modules | Co-located with components |
-| Context updates | In the relevant context file (modified, not replaced) |
+| Style files | Co-located with components |
+| State store updates | In the relevant store file (modified, not replaced) |
 
 Exact paths will match the directory structure documented in your service cards. If the service cards are accurate, the generated files will land in the right places.
 
 ---
 
-## Handling Validation Failures
+## Handling Wiring and Coverage Gaps
 
-The AI runs TypeScript, lint, and Playwright smoke tests automatically after generating code. If any of these fail, the AI will attempt to fix the issues before reporting back to you. Most validation issues are caught and resolved automatically.
+After generating code, the skill runs a wiring check (Phase 4): it cross-checks every data flow between the UI and backend LLDs — endpoint URLs, query params (including dispatch/routing params), request/response field names, and auth forwarding — and separately verifies that every acceptance criterion and user-facing surface in the experience card is satisfied by the generated implementation. It fixes every mismatch it finds before writing the final report.
 
-If the AI cannot resolve a validation failure, it will stop and report the error with context. Here is how to handle the most common cases:
+If the Phase 5 report still shows unresolved gaps, here is how to handle the most common cases:
 
-**TypeScript type error in a generated file:**
+**Wiring mismatch (URL, param, or shape):**
 
-The most common cause is a mismatch between the response type inferred from the API spec and the actual structure the LLD uses. Read the error, find the field in question, and check whether the API spec and LLD are consistent. If they are inconsistent, fix the LLD and re-run. If they are consistent, the TypeScript error may be a genuine issue with the generated code — fix it manually.
+Usually caused by an inconsistency between the backend LLD and UI LLD — e.g. the UI fetch hook was specified against a field name the backend LLD doesn't produce. Fix the inaccuracy in whichever LLD is wrong and re-run.
 
-**Lint error:**
+**Acceptance criterion not covered:**
 
-Usually a style issue that the AI missed (import order, unused variable). Fix manually; these do not require re-running the skill.
+Means no generated component, hook, or route satisfies that criterion. Check whether the criterion was addressed in the relevant LLD's Change Summary — if it's missing from the LLD, that's the root cause; fix the LLD and re-run.
 
-**Playwright smoke test failure:**
-
-The smoke test navigates to each new page and checks that it renders without a crash. A failure means a component threw an unhandled error on render. Read the Playwright output, find the component, and check whether the error is in the generated code or in an existing component the generated code depends on.
-
-**If validation errors are pervasive (more than 3-4 files affected):**
+**If gaps are pervasive (more than 3-4 files affected):**
 
 Stop, do not try to fix them individually. The root cause is almost always inaccurate service cards or an inconsistency between the backend LLD and UI LLD. Identify the inaccuracy, fix it in the source (service card or LLD), and re-run.
 
@@ -116,45 +110,18 @@ Stop, do not try to fix them individually. The root cause is almost always inacc
 
 ## Re-Running the Skill
 
-`/implement-feature` is safe to re-run. It overwrites generated files with fresh output. If you have made manual edits to generated files that you want to keep, save them before re-running.
+`/implement-feature` is safe to re-run. It overwrites generated files with fresh output. If you have made manual edits to generated files that you want to keep, save them before re-running. Use `--mode=backend` or `--mode=ui` to re-run just one side if only one LLD changed.
 
-Re-run when:
-- Validation failures suggest a systemic issue traced back to the LLD or service cards
-- You approved an LLD with an error and caught it after code generation
-- The PM requests a change to the UI that requires a revised UI LLD
-
-Do not re-run to fix minor issues like lint errors or small logic corrections — fix those manually.
+See the [Reference guide's Re-Run vs. Edit table](../reference.md#re-run-vs-edit-decision-table) for when a re-run is warranted vs. a manual fix.
 
 ---
 
 ## Code Review
 
-After the skill completes successfully, create a pull request on each repo and conduct a standard code review. The LLD approval already covered design; the code review covers correctness.
-
-**What to look for in code review:**
-
-- Generated models and types accurately reflect the API spec shapes
-- Error handling is complete — all error codes from the API spec are handled
-- There are no hardcoded values that should come from configuration
-- New routes have correct auth guards
-- New components are accessible (semantic HTML, ARIA where needed)
-- No console logs, debug comments, or TODO comments in production code
-- Service card updates at the end of Phase 7 are accurate — the new capabilities are correctly described
-
-**What code review is not for:**
-
-- Changing the architecture. That was the LLD review.
-- Adding features that were not in the LLD. That is a new feature workflow.
-- Redesigning components. If the design is wrong, update the experience card and UI LLD and regenerate.
+After the skill completes successfully, create a pull request on your target repo and run it through your team's standard code review process. The LLD approval already covered design — this review is about correctness. If the design turns out to be wrong, update the experience card and UI LLD and regenerate, rather than redesigning in review.
 
 ---
 
 ## After Code Review
 
-Once both PRs are merged:
-
-1. Verify the service cards were updated correctly in Phase 7. If the updates are missing or inaccurate, update them manually and commit.
-2. Run your full test suite in both repos.
-3. Deploy to your staging environment and perform manual QA against the experience card step by step.
-
-The feature workflow for this feature is complete. The next feature starts at FW-1.
+Once the PR is merged, the feature workflow is complete.
