@@ -61,13 +61,10 @@ The diagram below shows how that combination happens across four knowledge layer
 
 ### Adobe's knowledge stream — what to build
 
-Adobe provides three artifacts that describe the feature:
+Adobe provides two artifacts you receive and use for each feature:
 
-- **API Domain Docs** — the full Adobe VIPMP Partners API capability reference. Adobe engineers use this to author the API spec.
 - **Experience Card** — the user journey: what the user does at each step, what API calls happen, what success and error states look like. Written by Adobe's PdMs.
 - **API Spec** — every endpoint the feature calls: method, path, auth, request shape, response shape, error codes. Written by Adobe's engineers.
-
-You receive the Experience Card and API Spec. You validate them for completeness before running any skills. You do not author any of these.
 
 ### Your knowledge stream — how to build it
 
@@ -91,7 +88,7 @@ Your most important job in this workflow is keeping your service cards accurate.
 
 ## Who Does What
 
-There are two organizations involved in this workflow: **Adobe** and **you (the partner)**. Understanding this split is critical — you do not author the feature inputs, you validate them and then run the toolkit against your own codebase.
+This workflow involves two organizations: **Adobe**, which defines what the feature does, and **you (the partner)**, who decide how it fits into your codebase. You don't author the feature inputs — you review them, then run the toolkit against your own project.
 
 ### Adobe provides (you receive and use)
 
@@ -106,13 +103,14 @@ Adobe ships this AI Kit — the skills that power every step of the workflow. Yo
 | `/apply-api-spec` | Reads the API spec + your service cards → generates the backend LLD |
 | `/apply-experience-card` | Reads the experience card + backend LLD + your service cards → generates the UI LLD |
 | `/implement-feature` | Reads both approved LLDs + your service cards → generates working code |
+| `/verify-feature` | Audits generated code against both LLDs and the experience card → produces a pass/partial/fail report |
 
 **Per feature:**
 
 | Artifact | Your role |
 |---|---|
-| Experience Card | Validate completeness; raise gaps before running any skills |
-| API Spec | Validate completeness and consistency with experience card |
+| Experience Card | Review for completeness and brand/UX fit; adapt or raise gaps before running any skills |
+| API Spec | Review for completeness and consistency with the experience card |
 
 ### You produce (with AI assistance)
 
@@ -123,7 +121,7 @@ Adobe ships this AI Kit — the skills that power every step of the workflow. Yo
 | Backend LLD | AI generates from API spec + service cards | 
 | UI LLD | AI generates from experience card + backend LLD + service cards | 
 | Generated Code | AI generates from LLDs + service cards | 
-
+| Verification Report | AI generates by auditing generated code against both LLDs | 
 
 ---
 
@@ -134,28 +132,13 @@ Be clear-eyed about the boundaries before starting.
 - **Does not handle deployment or CI/CD.** Generated code lands in your repo. Deployment is your responsibility.
 - **Does not guarantee production-ready code without review.** Engineer code review is mandatory, not optional.
 - **Does not update service cards automatically.** When your codebase changes — new routes, new dependencies, new auth patterns — you must update the service cards to match. Generated code will follow outdated patterns if cards are stale.
-- **Does not make product decisions.** The AI does not decide what the feature should do. That is the PM's job, expressed through the experience card.
-
----
-
-## The Anytime Upgrade Example
-
-Throughout this manual, every guide uses the **Anytime Upgrade** feature as a worked example. This feature allows a partner to upgrade a customer's subscription mid-term with prorated pricing.
-
-The five-step user journey:
-1. Check which upgrade paths are available for the customer's current subscription
-2. Display the available upgrade options in the UI
-3. Preview the upgrade order, including prorated pricing
-4. Allow the user to adjust quantity and see the updated price
-5. Place the switch order and confirm
-
-This example is concrete enough to illustrate every phase of the workflow without being so complex that it obscures the process.
+- **Does not force a fixed feature or product design.** The experience card describes Adobe's intended user journey, but it can — and in most cases should — be customized to your brand and UX guidelines before you run the toolkit against it.
 
 ---
 
 ## Next Steps
 
-Once you have a clear mental model of the four tiers, proceed in this order:
+Once you have a clear mental model of the four knowledge layers, proceed in this order:
 
 1. If your project has not been onboarded before: start with **[Backend Service Card Generation](first-run/backend-service-card.md)** and then **[UI Service Card Generation](first-run/ui-service-card.md)**.
-2. If your project already has service cards: go directly to **[Writing the Experience Card](feature-workflow/review-experience-card.md)**.
+2. If your project already has service cards: go directly to **[Receiving the Experience Card](feature-workflow/review-experience-card.md)**.

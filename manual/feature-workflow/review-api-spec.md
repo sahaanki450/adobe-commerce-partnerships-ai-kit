@@ -1,40 +1,32 @@
 # Receiving the API Spec
 
-**Who does this:** Partners validates completeness  
+**Who does this:** Adobe provides the API spec — no action required from the partner  
 **Frequency:** Once per feature  
-**Prerequisites:** Backend Service card is complete and reviewed; Feature Experience card has been received and validated
+**Prerequisites:** Backend Service card is complete and reviewed; Feature Experience card has been received
 
 ---
 
 ## What the API Spec Is
 
-The API spec is a precise, structured description of every Adobe VIPMP Partners API endpoint the feature will call. It is written by **Adobe's Marketplace team** and provided to you as part of the feature package alongside the experience card.
+The API spec is a precise, structured description of every Adobe VIPMP Partners API endpoint the feature will call. It is written by **Adobe** and provided to you as part of the feature package alongside the experience card.
 
-You do not write the API spec. Your job at this step is to validate that it is complete and internally consistent before the skills use it to generate LLDs.
+You do not write the API spec, and you don't need to validate it — Adobe provides it complete and ready to use. Read it to understand exactly which endpoints the feature calls, since that's the contract the skills will build against.
 
-The AI generates the backend LLD by reading your API spec alongside your service cards. If the API spec is incomplete or ambiguous, the LLD will fill in the blanks with plausible-but-wrong assumptions. Catching gaps here costs minutes; catching them in code review costs hours.
+The AI generates the backend LLD by reading the API spec alongside your service cards.
 
 ---
 
-## What a Complete API Spec Looks Like
+## Understanding the API Spec's Structure
 
-A well-formed API spec covers every endpoint the feature uses, not just the primary one. Use this as your validation checklist.
+Every API spec covers every endpoint the feature uses, not just the primary one. Each operation includes:
 
-**Structure checklist — for each operation:**
-
-- [ ] HTTP method and full path are specified (e.g., `GET /v3/offer-switch-paths`)
-- [ ] All query parameters are listed with name, type, required/optional, and description
-- [ ] All request headers are listed — typically `Authorization: Bearer <token>` and `X-Api-Key`
-- [ ] Request body is specified (for POST/PUT/PATCH) with every field, its type, and whether it is required
-- [ ] Response body (200 OK) is specified with every field the feature will use — actual JSON structure, not a prose description
-- [ ] All error responses are listed with status code, error code, meaning, and expected UI behavior
-
-**Consistency checklist — cross-check against the experience card:**
-
-- [ ] Every step in the experience card that says "API call: X" has a corresponding operation in the API spec
-- [ ] The data returned by each operation is sufficient to power the UI state described in the experience card (e.g., if Step 3 shows a "prorated price," that field exists in the response)
-- [ ] The error codes in the API spec align with the error states in the experience card — no error state is described in the experience card for which there is no corresponding API error code, and vice versa
-- [ ] If an endpoint has multiple modes controlled by a field (e.g., `type: PREVIEW_SWITCH` vs `type: SWITCH`), each mode has its own documented request/response shape
+- HTTP method and full path (e.g., `GET /v3/offer-switch-paths`)
+- Query parameters, with name, type, required/optional, and description
+- Request headers — typically `Authorization: Bearer <token>` and `X-Api-Key`
+- Request body (for POST/PUT/PATCH), with every field, its type, and whether it is required
+- Response body (200 OK), with every field the feature will use — actual JSON structure, not a prose description
+- Error responses, with status code, error code, meaning, and expected UI behavior
+- If an endpoint has multiple modes controlled by a field (e.g., `type: PREVIEW_SWITCH` vs `type: SWITCH`), each mode's own request/response shape
 
 ---
 
@@ -178,22 +170,14 @@ POST /v3/orders
 
 ---
 
-## What to Do If the API Spec Is Incomplete
+## What to Do If Something Is Unclear
 
-If any item in the validation checklist is missing, contact your Adobe partner contact before proceeding.
+Adobe provides the API spec complete and ready to use, so this should be rare. If you do hit something ambiguous, contact your Adobe partner contact with a specific question rather than making an assumption — a wrong assumption will propagate through the LLD into generated code. Example:
 
-Common gaps and how to describe them:
-
-- "Operation 2 documents the PREVIEW_SWITCH response but not the SWITCH response. Can you add the SWITCH 200 response shape?"
-- "The error table for Operation 1 does not have a UI behavior column — can you specify what should happen for each error?"
 - "The experience card Step 3 says the preview shows a 'prorated total,' but the response shape does not include that field. Is it `proratedTotal` or something else?"
-
-Do not make assumptions to fill gaps. An assumption that is wrong will propagate through the LLD into generated code.
 
 ---
 
 ## After This Step
-
-Both the experience card and API spec are validated. You are ready to generate the backend LLD.
 
 Proceed to **[Generating the Backend LLD](generate-backend-lld.md)**.

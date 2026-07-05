@@ -3,8 +3,8 @@
 **Frequency:** Once per feature  
 **Prerequisites:**
 - Backend service card is complete and reviewed
-- API spec is complete
-- Feature Experience Card is complete
+- API spec exists
+- Feature Experience Card exists
 
 ---
 
@@ -25,19 +25,19 @@ The AI produces this by reading three inputs together:
 
 ## Running the Skill
 
-Open Claude Code in the `adobe-commerce-partnerships-ai-kit` directory and run:
+Open your AI coding agent in this AI Kit's root directory and run:
 
 ```
-/apply-api-spec <featureName> <path-to-backend-repo>
+/apply-api-spec <path-to-backend-repo> <path-to-feature-spec>
 ```
 
 **Example:**
 
 ```
-/apply-api-spec anytimeUpgrade ../my-partner-backend
+/apply-api-spec ../my-partner-backend feature-specs/anytime-upgrade
 ```
 
-The skill reads your API spec and service cards, reasons about the implementation, and writes the LLD. It will pause and show you the output before writing the file — review it before confirming.
+The skill reads the feature spec, locates and reads the matching API spec, and reads your service cards, then reasons about the implementation and writes the LLD. It will pause and show you the output before writing the file — review it before confirming.
 
 ---
 
@@ -46,18 +46,17 @@ The skill reads your API spec and service cards, reasons about the implementatio
 The skill produces a single file at:
 
 ```
-.claude/feature-specs/<featureName>/reference-files/BridgeLLD/backend/<feature-name>-lld.md
+<path-to-backend-repo>/docs/ai-kit/LLD/backend/<feature-spec-filename>-lld.md
 ```
 
-The LLD contains 8 sections:
+The LLD contains 7 sections:
 
 | Section | What it contains |
 |---|---|
 | **Summary** | One-paragraph description of the backend changes |
-| **Backend Changes** | Table of files to create or modify, with specific changes for each |
-| **UI Changes** | High-level notes on UI data needs (consumed by the UI LLD) |
-| **Data Flow Diagram** | Step-by-step data flow per user action, from UI request to API response |
-| **Reuse Summary** | Existing code, utilities, or patterns to reuse — not re-implement |
+| **Data Flow** | Step-by-step call chain per operation, from trigger to response |
+| **Change Summary** | Table of files to create or modify, with specific changes for each — cross-checked against your service cards to prefer reusing existing files over creating new ones |
+| **DB Changes** | Schema or migration changes required, or an explicit note that the service is stateless |
 | **Design Decisions** | Non-obvious choices and the reasoning behind them |
 | **Acceptance Criteria Coverage** | How each acceptance criterion from the experience card is met |
 | **Out of Scope** | What the backend explicitly will not handle in this implementation |
@@ -66,9 +65,9 @@ The LLD contains 8 sections:
 
 ## Reviewing the LLD — Decision Gate DG-3
 
-**Do not proceed to FW-4 until you have completed the DG-3 review.**
+**Do not proceed to generating the UI LLD until you have completed the DG-3 review.**
 
-Open the [Decision Gate Guide — DG-3](../decision-gates.md#dg-3-backend-lld-review) for the full review checklist.
+Open the [Decision Gate Guide — DG-3](../decision-gates.md#dg-3--backend-lld-review) for the full review checklist.
 
 The most critical things to verify:
 

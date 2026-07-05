@@ -1,6 +1,6 @@
 # Receiving the Experience Card
 
-**Who does this:** Partners validates completeness
+**Who does this:** Adobe provides the experience card; partner can customize to their UX/brand guidelines if needed
 **Frequency:** Once per feature  
 **Prerequisites:** Backend and UI Service Cards are complete and reviewed
 
@@ -8,39 +8,37 @@
 
 ## What the Experience Card Is
 
-The experience card is a structured document written by **Adobe's Marketplace team** that defines the user journey for a feature. It describes what happens from the user's perspective: what they see, what they do, what data the app needs at each step, and what happens when things go wrong.
+The experience card is a structured document written by **Adobe** that defines the user journey for a feature. It describes what happens from the user's perspective: what they see, what they do, what data the app needs at each step, and what happens when things go wrong.
 
 You do not write the experience card. Adobe provides it to you as part of the feature package alongside the API spec.
 
 Your job at this step is to:
-1. Confirm the experience card is complete and unambiguous before running any skills
-2. Raise any gaps or questions with your Adobe partner contact before proceeding
-
-Starting rest of the feature implementation with an incomplete experience card will produce LLDs that miss error states, omit steps, or describe UI behavior that does not match Adobe's intent.
+1. Read the experience card so you understand the user journey and API touchpoints
+2. Customize it to your brand and UX guidelines if needed, before running any skills
 
 ---
 
-## What a Complete Experience Card Looks Like
+## Understanding the Experience Card's Structure
 
-A well-formed experience card has all of the following. Use this as your validation checklist.
+Every experience card follows the same structure. Knowing it helps you read the card quickly and know what's safe to customize.
 
-**Structure checklist:**
+**Every experience card includes:**
 
-- [ ] An **overview** paragraph that describes what the feature does and why
-- [ ] A **preconditions** section listing what must be true before the flow starts — required permissions, required session state, required prior actions
-- [ ] A **numbered step sequence** — not bullet points, not prose, but discrete numbered steps
-- [ ] For each step: a user action, the API call at that step (if any), a success state, and named error states
-- [ ] An **edge cases** section covering scenarios that do not fit the main step sequence
-- [ ] An **out of scope** section explicitly stating what this feature does not handle
-- [ ] A **Figma design URL** with a node ID (or explicit note that no design is available)
+- An **overview** paragraph that describes what the feature does and why
+- A **preconditions** section listing what must be true before the flow starts — required permissions, required session state, required prior actions
+- A **numbered step sequence** — not bullet points, not prose, but discrete numbered steps
+- For each step: a user action, the API call at that step (if any), a success state, and named error states
+- An **edge cases** section covering scenarios that do not fit the main step sequence
+- An **out of scope** section explicitly stating what this feature does not handle
+- A **Figma design URL** with a node ID (or explicit note that no design is available)
 
-**Completeness checklist — things most often missing:**
+## What You Can Customize
 
-- [ ] Every step that involves an API call names the operation (e.g., "GET offer-switch-paths") — not just "fetch subscription data"
-- [ ] Error states are specific: they name what the user sees, whether the user can retry, and whether existing data is preserved — not "show an error message"
-- [ ] Preconditions include permission requirements, not just data requirements
-- [ ] Edge cases cover multi-item scenarios (e.g., a customer with multiple subscriptions where some are eligible and some are not)
-- [ ] The Figma URL includes the node ID (`?node-id=XX%3AYY`) — a URL without a node ID points to the whole file, not the right frame
+The experience card defines the functional contract for the feature — the API call sequence, and the error states it produces. You're free to adapt everything else to your brand and UX:
+
+- **Visual treatment** — colors, spacing, component choice, whether a step is a modal, inline panel, or separate page
+- **Copy** — button labels, messaging tone, error text — as long as the meaning is preserved
+- **Emphasis and layout** — how prominently something is shown, grouping, ordering of secondary elements
 
 ---
 
@@ -123,22 +121,16 @@ https://www.figma.com/file/xxxx/anytime-upgrade?node-id=12%3A345
 
 ---
 
-## What to Do If the Experience Card Is Incomplete
+## What to Do If Something Is Unclear
 
-If you run through the validation checklist and find gaps, do not proceed to rest of the feature implementation workflow steps. Incomplete inputs produce incomplete outputs.
-
-**Contact your Adobe partner contact** with specific questions. Helpful framing:
+Adobe provides the experience card complete and ready to use, so this should be rare. If you do hit a step that's ambiguous, or you're unsure whether a customization affects the API contract, contact your Adobe partner contact with a specific question rather than guessing. Examples:
 
 - "Step 3 names a success state but no error state. What should the user see if the PREVIEW_SWITCH call returns a 400?"
-- "The edge cases section does not address what happens if the customer has zero active subscriptions. Should the page be hidden, disabled, or show an empty state?"
+- "I'd like to combine Steps 3 and 4 into a single panel — does that change any API call sequencing?"
 - "The Figma URL does not include a node ID — can you share the specific frame?"
-
-Be specific. "The experience card is missing some things" will result in a slower response than a precise list of gaps.
 
 ---
 
 ## After This Step
 
-Confirm with your partner engineer that the API spec has also been received. Both documents are needed before running FW-3 and FW-4.
-
-Once both documents are in hand and validated, proceed to **[Receiving the API Spec](review-api-spec.md)**.
+Proceed to **[Receiving the API Spec](review-api-spec.md)**.
