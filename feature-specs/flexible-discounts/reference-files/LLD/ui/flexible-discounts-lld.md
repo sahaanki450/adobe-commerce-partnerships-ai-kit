@@ -1,3 +1,4 @@
+
 # LLD — Flexible Discounts (UI)
 
 **Target repo:** bridge  
@@ -83,7 +84,7 @@ User action: Partner clicks "Apply" in dialog footer
   ← CheckoutPage re-triggers fetchOrderPreview with flexDiscountCodes: [code] in lineItem
   → POST /api/orders?type=Preview
   ← if flexDiscounts[0].result == 'SUCCESS': updated price shown in checkout summary
-  ← if result == 'FAILURE': price unchanged (no explicit error surfaced — spec behaviour)
+  ← if result == 'FAILURE': `fetchOrderPreview` throws with the user-facing message for the returned error code (see experience card's Discount Code Error Handling section) — never the raw error code or reason code — caught in `checkout.tsx` and shown via the existing `ErrorToast`; price unchanged
 ```
 
 **Surface 3 — Partner applies a discount during renewal editing**
@@ -114,7 +115,7 @@ User action: Partner clicks "Save Changes" in EditRenewalDialog
   → fetchRenewalPreviewAndUpdateProducts fires
   → POST /api/orders?type=PREVIEW_RENEWAL with lineItems[].flexDiscountCodes: [code]
   ← if flexDiscounts[0].result == 'SUCCESS': product price updates to discounted value
-  ← if result == 'FAILURE': code badge shown in negative (red) variant; price unchanged
+  ← if result == 'FAILURE': code badge shown in negative (red) variant, and the user-facing message for the returned error code (see experience card's Discount Code Error Handling section, never the raw error code or reason code) is passed to `showError` and shown via the existing renewal error toast; price unchanged
   ← EditRenewalDialog shows updated EstimatedTotal per currency
 ```
 
@@ -145,6 +146,9 @@ User action: Partner clicks "Save Changes" in EditRenewalDialog
 | `components/renewal/EditRenewalDialog.tsx` | MODIFY | Component | Accept `country` and `marketSegment` props; pass both plus `isRenewalContext` to each `PromoCodeButton` |
 | `components/customerdetails/CustomerProductsOverviewPanel.tsx` | MODIFY | Component | Extract `customer.companyProfile.address.country`; pass `country` and `marketSegment` to `EditRenewalDialog` |
 | `utils/constants.ts` | MODIFY | Util | Add `FLEX_DISCOUNT_API_TYPE` constants |
+| `utils/apiError.ts` | MODIFY | Util | Add `ORDER_PREVIEW_REASON_MESSAGES` map and `getMappedOrderPreviewError()` — maps flex discount error codes and 2141 reason codes to the user-facing messages defined in the experience card's Discount Code Error Handling section |
+| `utils/cartUtils.ts` | MODIFY | Util | `fetchOrderPreview` calls `getMappedOrderPreviewError()` on failure and throws with the mapped message instead of the raw API error/reason code |
+| `hooks/useOrderOperations.ts` | MODIFY | Data Fetch | Switch/renewal preview error path calls `getMappedOrderPreviewError()` on failure and throws with the mapped message instead of the raw API error/reason code |
 
 ---
 
@@ -227,11 +231,15 @@ const visibleDiscounts = allDiscounts.filter(d => {
 
 **Infinite scroll:** Attach an `IntersectionObserver` to a sentinel `<div>` at the bottom of the grid. On intersection, call `fetchNextPage()` if `hasNextPage && !isFetchingNextPage`.
 
-**Loading state:** Render `<ProgressCircle aria-label="Loading discounts" isIndeterminate />` when `isLoading`.
+**Prompt state:** Render `"Enter a country to browse available discounts."` when `!debouncedCountry || !marketSegment` — checked *before* loading/empty/error below. `PartnerDetails` has no country field (only `region` + `currencies`), so `country` cannot be defaulted; the grid must never render, fetch, or show the empty-state message until the partner has typed one. This check takes priority over all states below.
 
-**Empty state:** `"No discounts available for {country} / {marketSegment}."` when `visibleDiscounts.length === 0 && !isLoading && !hasNextPage`.
+**Loading state:** Render `<ProgressCircle aria-label="Loading discounts" isIndeterminate />` when `isLoading` (only reachable once the prompt-state condition above is false).
+
+**Empty state:** `"No discounts available for {country} / {marketSegment}."` when `visibleDiscounts.length === 0 && !isLoading && !hasNextPage` (only reachable once the prompt-state condition above is false).
 
 **Error state:** Inline error `<div>` with `error.message`.
+
+**Render order:** prompt state → loading state → error state → empty state → grid.
 
 **Count display:** `"{allDiscounts.length} discount(s) available"` above the grid (updates as pages load).
 
@@ -1039,6 +1047,67 @@ export const FLEX_DISCOUNT_API_TYPE = {
   GET_CUSTOMER_FLEX_DISCOUNTS: 'getCustomerFlexDiscounts',
 } as const;
 ```
+
+---
+
+### `utils/apiError.ts` — MODIFY
+
+Add the flex discount error code and 2141 reason code mapping defined in the experience card's [Discount Code Error Handling](../../../experience-card/flexible-discounts.md#discount-code-error-handling) section. Every consumer of this mapping must display the returned message string — never the raw `code` or raw `Reason: <REASON_CODE>` fragment from `additionalDetails`.
+
+```typescript
+export const ORDER_PREVIEW_REASON_MESSAGES: Record<string, string> = {
+  INELIGIBLE_COMMITMENT_STATUS_OR_PERCENT_SEATS:
+    'Customer is not in eligible 3YC status or not migrating percentage of seats required for this discount.',
+  INELIGIBLE_COMMITMENT_STATUS:
+    'Customer is not in eligible 3YC status required for this discount.',
+  INELIGIBLE_COMMITMENT_STATUS_OR_COMMIT_QUANTITY:
+    'Customer is not in eligible 3YC status or does not meet the minimum commit quantity required for this discount.',
+  SEAT_UPGRADE_PERCENTAGE_NOT_MET:
+    'The number of seats being upgraded does not meet the minimum percentage required for this discount.',
+};
+
+export const FLEX_DISCOUNT_ERROR_MESSAGES: Record<string, string> = {
+  '2144': 'This discount cannot be combined with other discounts.',
+  '2145': 'This discount code cannot be applied to this product.',
+  '2146': 'This discount code is invalid.',
+  '2147': 'Only one discount code can be applied per product.',
+};
+
+/**
+ * Maps an order/renewal preview error response to the user-facing message
+ * defined in the experience card. Returns null if the response is not a
+ * recognized flex discount error, so callers can fall back to a generic message.
+ */
+export function getMappedOrderPreviewError(errorData: unknown): string | null {
+  if (typeof errorData !== 'object' || errorData === null) return null;
+  const data = errorData as Record<string, unknown>;
+
+  if (data.code === '2141') {
+    if (Array.isArray(data.additionalDetails)) {
+      for (const detail of data.additionalDetails as string[]) {
+        const match = detail.match(/Reason:\s*(\w+)/);
+        if (match && ORDER_PREVIEW_REASON_MESSAGES[match[1]]) {
+          return ORDER_PREVIEW_REASON_MESSAGES[match[1]];
+        }
+      }
+    }
+    return 'Customer is not qualified for this discount.';
+  }
+
+  if (typeof data.code === 'string' && FLEX_DISCOUNT_ERROR_MESSAGES[data.code]) {
+    return FLEX_DISCOUNT_ERROR_MESSAGES[data.code];
+  }
+
+  return null;
+}
+```
+
+**Consumers:**
+
+- `utils/cartUtils.ts` — `fetchOrderPreview` calls `getMappedOrderPreviewError(errorData)` on a non-`ok` response; if it returns a mapped message, throw with that message instead of `errorData.message` or the raw `additionalDetails` string.
+- `hooks/useOrderOperations.ts` — the switch/renewal preview error path applies the same mapping before throwing, so `PREVIEW_SWITCH` failures surface the mapped message rather than `JSON.stringify(errorData)`.
+- `pages/checkout.tsx` — the thrown message reaches the component unchanged and is passed to `setErrorMessage` / shown via the existing `ErrorToast`. No change needed beyond what `cartUtils.ts` already throws.
+- `components/renewal/EditRenewalDialog.tsx` — the thrown message reaches `showError(errorMsg)` and is shown via the existing renewal error toast. No change needed beyond what `useOrderOperations.ts` already throws.
 
 ---
 

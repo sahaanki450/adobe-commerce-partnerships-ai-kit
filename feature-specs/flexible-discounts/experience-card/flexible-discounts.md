@@ -159,7 +159,7 @@ Once a code is entered or selected, an order preview is triggered immediately. T
 - **Success** — `flexDiscounts: [{ code, result: "SUCCESS" }]`. The pricing in the checkout updates to reflect the discounted price.
 - **Failure** — `flexDiscounts: [{ code, result: "FAILURE" }]`. The code is treated as invalid; the discount is not applied and pricing remains unchanged.
 
-The partner sees the updated (discounted) price in the order summary before confirming. If the code is invalid, no error is surfaced explicitly — the pricing simply does not change.
+The partner sees the updated (discounted) price in the order summary before confirming. If the code is invalid, an inline error message is shown next to the promo code field using the mapped message for the returned error code (see [Discount Code Error Handling](#discount-code-error-handling)) — pricing for this line item remains unchanged and other line items are unaffected.
 
 ---
 
@@ -237,7 +237,7 @@ POST /v3/customers/<customer-id>/orders
 The preview API validates the code per line item and returns one of two outcomes:
 
 - **Success** — `flexDiscounts: [{ code, result: "SUCCESS" }]`. The product's displayed price updates to the discounted value.
-- **Failure** — `flexDiscounts: [{ code, result: "FAILURE" }]`. The code badge is shown in a negative (red) state, and pricing remains unchanged.
+- **Failure** — `flexDiscounts: [{ code, result: "FAILURE" }]`. The code badge is shown in a negative (red) state alongside the mapped error message for the returned error code (see [Discount Code Error Handling](#discount-code-error-handling)), and pricing remains unchanged.
 
 The partner sees updated pricing for every product before confirming the renewal.
 
@@ -259,5 +259,32 @@ PATCH /v3/customers/<customer-id>/subscriptions/<subscription-id>
 ```
 
 Partners can edit multiple products in a single dialog session; each product carries its own independent discount code. Codes applied to one product do not affect others.
+
+---
+
+## Discount Code Error Handling
+
+Applies to Surface 2 (Checkout) and Surface 3 (Edit Renewal) — any time a discount code is submitted in an order preview, renewal preview, or subscription update request.
+
+When a discount code fails validation, the API returns one of the error codes below. The partner must see the mapped message shown inline next to the promo code field / discount badge — never a silent no-op.
+
+| Error Code | User-Facing Message                                      |
+| ---------- | -------------------------------------------------------- |
+| 2141       | See reason-specific messages below                       |
+| 2144       | "This discount cannot be combined with other discounts." |
+| 2145       | "This discount code cannot be applied to this product."  |
+| 2146       | "This discount code is invalid."                         |
+| 2147       | "Only one discount code can be applied per product."     |
+
+**2141 — reason-specific messages**, taken from `Reason: <REASON_CODE>` in the API's `additionalDetails`:
+
+| Reason Code                                       | Message shown to partner                                                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `INELIGIBLE_COMMITMENT_STATUS_OR_PERCENT_SEATS`   | "Customer is not in eligible 3YC status or not migrating percentage of seats required for this discount."         |
+| `INELIGIBLE_COMMITMENT_STATUS`                    | "Customer is not in eligible 3YC status required for this discount."                                              |
+| `INELIGIBLE_COMMITMENT_STATUS_OR_COMMIT_QUANTITY` | "Customer is not in eligible 3YC status or does not meet the minimum commit quantity required for this discount." |
+| `SEAT_UPGRADE_PERCENTAGE_NOT_MET`                 | "The number of seats being upgraded does not meet the minimum percentage required for this discount."             |
+
+If a 2141 response has no recognized reason code in `additionalDetails`, fall back to the general message: "Customer is not qualified for this discount."
 
 ---
